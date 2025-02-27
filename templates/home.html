@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="space-y-6">
+        <!-- Tweet Form -->
+        <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+                <textarea name="content" class="w-full resize-y" placeholder="What's happening?"></textarea>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                    <label for="media" class="text-gray-300 font-semibold">Add Media:</label>
+                    <input type="file" id="media" name="media" accept="image/*,video/*" class="flex-1">
+                </div>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full w-full sm:w-auto transition duration-300">Tweet</button>
+            </form>
+        </div>
+
+        <!-- Tweets and Trending -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-4">
+                {% for tweet in tweets %}
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                        <p class="text-blue-400 font-semibold"><a href="{% url 'profile' tweet.user.username %}" class="hover:text-blue-300 transition duration-300">{{ tweet.user.username }}</a></p>
+                        <p class="text-gray-300 break-words">{{ tweet.content }}</p>
+                        {% if tweet.image %}<img src="{{ tweet.image.url }}" class="w-full h-auto rounded-lg mt-2 object-cover">{% endif %}
+                        {% if tweet.video %}<video src="{{ tweet.video.url }}" controls class="w-full rounded-lg mt-2"></video>{% endif %}
+                        <div class="flex space-x-4 mt-2">
+                            <button data-tweet-id="{{ tweet.id }}" class="like-btn text-gray-300 hover:text-white transition duration-300 flex items-center">
+                                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                <span>{{ tweet.likes.count }}</span>
+                            </button>
+                            <a href="{% url 'tweet_detail' tweet.id %}" class="text-blue-400 hover:text-blue-300 transition duration-300">{{ tweet.comments.count }} Comments</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-gray-400 text-center">No tweets yet. Start sharing!</p>
+                {% endfor %}
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold text-white mb-4">Trending</h2>
+                {% for tweet in trending %}
+                    <p class="text-gray-300 mb-2 break-words">{{ tweet.content|truncatechars:20 }}</p>
+                {% empty %}
+                    <p class="text-gray-400">Nothing trending yet.</p>
+                {% endfor %}
+                <form method="get" action="{% url 'search' %}" class="mt-4">
+                    <input type="text" name="q" value="{{ search_query }}" class="w-full mb-2" placeholder="Search QuickTalk">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full w-full transition duration-300">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

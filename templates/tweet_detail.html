@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="max-w-3xl mx-auto bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg mt-8">
+        <div class="border-b border-gray-700 pb-4 mb-4">
+            <p class="text-blue-400 font-bold text-lg"><a href="{% url 'profile' tweet.user.username %}" class="hover:text-blue-300 transition duration-300">{{ tweet.user.username }}</a></p>
+            <p class="text-gray-300 break-words">{{ tweet.content }}</p>
+            {% if tweet.image %}<img src="{{ tweet.image.url }}" class="w-full h-auto rounded-lg mt-4 object-cover">{% endif %}
+            {% if tweet.video %}<video src="{{ tweet.video.url }}" controls class="w-full rounded-lg mt-4"></video>{% endif %}
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-4">
+                <button data-tweet-id="{{ tweet.id }}" class="like-btn text-gray-300 hover:text-white transition duration-300 flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    Like ({{ tweet.likes.count }})
+                </button>
+                <span class="text-gray-400">Comments ({{ tweet.comments.count }})</span>
+            </div>
+        </div>
+        <form method="post" action="{% url 'add_comment' tweet.id %}" class="space-y-4 mb-6">
+            {% csrf_token %}
+            <textarea name="content" class="w-full resize-y" placeholder="Add a comment..."></textarea>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full w-full sm:w-auto transition duration-300">Post Comment</button>
+        </form>
+        <div class="space-y-4">
+            {% for comment in tweet.comments.all %}
+                <div class="bg-gray-700 p-4 rounded-lg shadow-md">
+                    <p class="text-blue-400 font-semibold"><a href="{% url 'profile' comment.user.username %}" class="hover:text-blue-300 transition duration-300">{{ comment.user.username }}</a></p>
+                    <p class="text-gray-300 break-words">{{ comment.content }}</p>
+                    <p class="text-gray-500 text-sm mt-1">{{ comment.created_at|date:"F j, Y, g:i a" }}</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-400 text-center">No comments yet. Be the first!</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
