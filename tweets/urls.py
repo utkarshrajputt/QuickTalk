@@ -6,6 +6,7 @@ urlpatterns = [
     path('tweet/<int:tweet_id>/', views.tweet_detail, name='tweet_detail'),
     path('like/<int:tweet_id>/', views.like_tweet, name='like_tweet'),
     path('comment/<int:tweet_id>/', views.add_comment, name='add_comment'),
+    path('delete/<int:tweet_id>/', views.delete_tweet, name='delete_tweet'),  # New route
     path('notifications/', views.notifications, name='notifications'),
     path('search/', views.search, name='search'),
 ]

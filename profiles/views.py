@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.models import User  # Add this import
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .models import Profile
 
 @login_required
@@ -13,8 +13,11 @@ def profile_view(request, username):
 def edit_profile(request):
     profile = request.user.profile
     if request.method == 'POST':
-        profile.bio = request.POST['bio']
+        profile.bio = request.POST.get('bio', profile.bio)
         if 'profile_picture' in request.FILES:
+            # Delete old image if it exists to avoid clutter
+            if profile.profile_picture:
+                profile.profile_picture.delete(save=False)
             profile.profile_picture = request.FILES['profile_picture']
         profile.save()
         return redirect('profile', username=request.user.username)

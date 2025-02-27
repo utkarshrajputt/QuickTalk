@@ -15,8 +15,16 @@
                 {% csrf_token %}
                 <textarea name="bio" class="w-full resize-y" placeholder="Your bio">{{ profile.bio }}</textarea>
                 <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                    <label for="profile_picture" class="text-gray-300 font-semibold">Profile Picture:</label>
-                    <input type="file" id="profile_picture" name="profile_picture" class="flex-1">
+                    <label for="profile_picture" class="text-gray-300 font-semibold shrink-0 text-sm sm:text-base">Profile Picture:</label>
+                    <div class="custom-file-input flex-1">
+                        <input type="file" id="profile_picture" name="profile_picture" onchange="updateFileName(this)">
+                        <label for="profile_picture" class="flex items-center">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 12l-4-4m4 4l4-4m6 4v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6m6 0l4 4m-4-4l-4 4"></path>
+                            </svg>
+                            <span id="profile_picture-label">Choose a file</span>
+                        </label>
+                    </div>
                 </div>
                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full w-full transition duration-300">Update</button>
             </form>

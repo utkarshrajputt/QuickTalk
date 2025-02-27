@@ -29,7 +29,6 @@ def home(request):
     trending = Tweet.objects.annotate(like_count=Count('likes')).order_by('-like_count')[:5]
     return render(request, 'home.html', {'tweets': tweets, 'trending': trending})
 
-# Rest of the views remain unchanged...
 @login_required
 def tweet_detail(request, tweet_id):
     tweet = get_object_or_404(Tweet, id=tweet_id)
@@ -37,12 +36,14 @@ def tweet_detail(request, tweet_id):
 
 @login_required
 def like_tweet(request, tweet_id):
-    tweet = get_object_or_404(Tweet, id=tweet_id)
-    if request.user in tweet.likes.all():
-        tweet.likes.remove(request.user)
-    else:
-        tweet.likes.add(request.user)
-    return JsonResponse({'likes': tweet.likes.count()})
+    if request.method == 'POST':
+        tweet = get_object_or_404(Tweet, id=tweet_id)
+        if request.user in tweet.likes.all():
+            tweet.likes.remove(request.user)
+        else:
+            tweet.likes.add(request.user)
+        return JsonResponse({'likes': tweet.likes.count()})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required
 def add_comment(request, tweet_id):
@@ -51,6 +52,13 @@ def add_comment(request, tweet_id):
         content = request.POST['content']
         Comment.objects.create(tweet=tweet, user=request.user, content=content)
     return JsonResponse({'comments': tweet.comments.count()})
+
+@login_required
+def delete_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    if request.user == tweet.user:  # Only allow the tweet's author to delete
+        tweet.delete()
+    return redirect('home')
 
 @login_required
 def notifications(request):
