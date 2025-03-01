@@ -6,7 +6,7 @@ SECRET_KEY = 'your-secret-key-here'  # Replace with a secure key in production
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -19,7 +19,7 @@ INSTALLED_APPS = [
     'profiles.apps.ProfilesConfig',
     'tweets',
     'tailwind',
-    'bootstrap5',
+    # 'bootstrap5',
 ]
 
 MIDDLEWARE = [
