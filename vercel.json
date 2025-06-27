@@ -9,8 +9,5 @@
             "src": "/(.*)",
             "dest" : "QuickTalk/wsgi.py"
         }
-    ],
-    "hooks": {
-      "build": "cp static/db.sqlite3 /tmp/db.sqlite3"
-    }
+    ]
     }

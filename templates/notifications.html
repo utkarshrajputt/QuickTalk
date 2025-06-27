@@ -1,17 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="max-w-3xl mx-auto mt-8 space-y-6">
-        <h2 class="text-xl sm:text-2xl font-bold text-white text-center mb-6">Notifications</h2>
+        <h2 class="text-xl sm:text-2xl font-bold text-white text-center mb-6">Your Notifications</h2>
         <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
-            <h3 class="text-lg font-semibold text-white mb-4">Likes</h3>
-            {% for tweet in likes %}
-                <p class="text-gray-300 mb-2 break-words">{{ tweet.user.username }} liked your tweet: <span class="text-gray-400">{{ tweet.content|truncatechars:20 }}</span></p>
+            <h3 class="text-lg font-semibold text-white mb-4">Likes on Your Tweets</h3>
+            {% for tweet in liked_tweets %}
+                <p class="text-gray-300 mb-2 break-words">
+                    {% for liker in tweet.likes.all %}
+                        <a href="{% url 'profile' liker.username %}" class="text-blue-400 hover:text-blue-300 transition duration-300">{{ liker.username }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    {% if tweet.likes.count > 1 %}liked{% else %}liked{% endif %} your tweet: 
+                    <span class="text-gray-400">"{{ tweet.content|truncatechars:20 }}"</span>
+                </p>
             {% empty %}
-                <p class="text-gray-400">No likes yet.</p>
+                <p class="text-gray-400">No one has liked your tweets yet.</p>
             {% endfor %}
-            <h3 class="text-lg font-semibold text-white mt-6 mb-4">Follows</h3>
-            {% for profile in follows %}
-                <p class="text-gray-300 mb-2"><a href="{% url 'profile' profile.user.username %}" class="text-blue-400 hover:text-blue-300 transition duration-300">{{ profile.user.username }}</a> started following you</p>
+
+            <h3 class="text-lg font-semibold text-white mt-6 mb-4">New Followers</h3>
+            {% for follower in new_followers %}
+                <p class="text-gray-300 mb-2">
+                    <a href="{% url 'profile' follower.user.username %}" class="text-blue-400 hover:text-blue-300 transition duration-300">{{ follower.user.username }}</a> started following you
+                </p>
             {% empty %}
                 <p class="text-gray-400">No new followers yet.</p>
             {% endfor %}

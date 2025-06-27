@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Function to get CSRF token from cookie
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -18,9 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const csrftoken = getCookie('csrftoken');
 
     document.querySelectorAll('.like-btn').forEach(btn => {
+        const tweetId = btn.dataset.tweetId;
+        const heartSvg = btn.querySelector('svg');
+        const countSpan = btn.querySelector('.like-count');
+
+        // Ensure initial elements exist
+        if (!heartSvg || !countSpan) {
+            console.error(`Missing SVG or span for tweet ID ${tweetId}`);
+            return;
+        }
+
         btn.addEventListener('click', async (e) => {
-            e.preventDefault(); // Prevent any default behavior
-            const tweetId = btn.dataset.tweetId;
+            e.preventDefault();
             const response = await fetch(`/like/${tweetId}/`, {
                 method: 'POST',
                 headers: {
@@ -29,11 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
             });
             const data = await response.json();
-            if (data.likes !== undefined) {
-                const countSpan = btn.querySelector('.like-count');
+            if (data.likes !== undefined && data.is_liked !== undefined) {
                 countSpan.textContent = data.likes;
+                heartSvg.setAttribute('fill', data.is_liked ? 'currentColor' : 'none');
             } else {
-                console.error('Error:', data.error);
+                console.error('Error in response:', data.error);
             }
         });
     });

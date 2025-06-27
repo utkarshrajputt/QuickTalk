@@ -13,12 +13,7 @@ def profile_view(request, username):
 def edit_profile(request):
     profile = request.user.profile
     if request.method == 'POST':
-        profile.bio = request.POST.get('bio', profile.bio)
-        if 'profile_picture' in request.FILES:
-            # Delete old image if it exists to avoid clutter
-            if profile.profile_picture:
-                profile.profile_picture.delete(save=False)
-            profile.profile_picture = request.FILES['profile_picture']
+        profile.bio = request.POST.get('bio', profile.bio)  # Update bio only
         profile.save()
         return redirect('profile', username=request.user.username)
     return render(request, 'profile.html', {'profile': profile})
