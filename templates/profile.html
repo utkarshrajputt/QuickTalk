@@ -62,7 +62,7 @@
                         Edit Profile
                     </a>
                 {% else %}
-                    <button onclick="toggleFollow({{ profile.id }})" id="follow-btn" 
+                    <button onclick="toggleFollow('{{ profile.id }}')" id="follow-btn" 
                             class="btn {% if is_following %}btn-danger{% else %}btn-primary{% endif %} hover-lift">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             {% if is_following %}
