@@ -10,4 +10,11 @@ urlpatterns = [
     path('notifications/', views.notifications, name='notifications'),
     path('search/', views.search, name='search'),
     path('search-users/', views.search_users, name='search_users'),  # New route
+
+    # New professional features
+    path('bookmark/<int:tweet_id>/', views.bookmark_tweet, name='bookmark_tweet'),
+    path('bookmarks/', views.bookmarks, name='bookmarks'),
+    path('notifications/mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
+    path('trending/', views.trending_hashtags, name='trending_hashtags'),
+    path('hashtag/<str:hashtag>/', views.hashtag_tweets, name='hashtag_tweets'),
 ]

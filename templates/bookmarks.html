@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Bookmarks - QuickTalk{% endblock %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto">
+        <!-- Page Header -->
+        <div class="card slide-up mb-8">
+            <div class="card-header">
+                <h1 class="card-title flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                    Your Bookmarks
+                </h1>
+                <p class="card-subtitle">{{ bookmarks.count }} saved tweet{{ bookmarks.count|pluralize }}</p>
+            </div>
+        </div>
+
+        <!-- Bookmarked Tweets -->
+        <div class="space-y-6">
+            {% for bookmark in bookmarks %}
+                <div class="tweet-card hover-lift">
+                    <div class="tweet-header">
+                        <img src="{% if bookmark.tweet.user.profile.profile_picture %}{{ bookmark.tweet.user.profile.profile_picture.url }}{% else %}{% load static %}{% static 'default.jpg' %}{% endif %}" 
+                             class="tweet-avatar" alt="{{ bookmark.tweet.user.username }}">
+                        <div class="tweet-user-info">
+                            <a href="{% url 'profile' bookmark.tweet.user.username %}" class="tweet-username">
+                                {{ bookmark.tweet.user.username }}
+                                {% if bookmark.tweet.user.profile.is_verified %}
+                                    <svg class="verified-badge" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                {% endif %}
+                            </a>
+                            <div class="tweet-timestamp">{{ bookmark.tweet.created_at|timesince }} ago</div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-neutral-500 bg-neutral-800 px-2 py-1 rounded">
+                                Saved {{ bookmark.created_at|timesince }} ago
+                            </span>
+                            <button onclick="toggleBookmark({{ bookmark.tweet.id }})" class="p-2 text-blue-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all duration-200">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tweet-content">{{ bookmark.tweet.content|linebreaks }}</div>
+                    
+                    {% if bookmark.tweet.image %}
+                        <img src="{{ bookmark.tweet.image.url }}" class="w-full max-h-96 rounded-xl object-cover mb-4" alt="Tweet image">
+                    {% endif %}
+                    {% if bookmark.tweet.video %}
+                        <video src="{{ bookmark.tweet.video.url }}" controls class="w-full max-h-96 rounded-xl mb-4"></video>
+                    {% endif %}
+                    
+                    <div class="tweet-actions">
+                        <button data-tweet-id="{{ bookmark.tweet.id }}" class="like-btn tweet-action">
+                            <svg class="w-4 h-4" fill="{% if request.user in bookmark.tweet.likes.all %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="like-count">{{ bookmark.tweet.likes.count }}</span>
+                        </button>
+                        <a href="{% url 'tweet_detail' bookmark.tweet.id %}" class="tweet-action">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <span>{{ bookmark.tweet.comments.count }}</span>
+                        </a>
+                        <button data-tweet-id="{{ bookmark.tweet.id }}" class="bookmark-btn tweet-action text-yellow-500">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                            <span class="bookmark-count">{{ bookmark.tweet.bookmark_set.count }}</span>
+                        </button>
+                        <div class="tweet-action">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span>{{ bookmark.tweet.views }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="card text-center py-12">
+                    <div class="w-24 h-24 bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-300 mb-2">No bookmarks yet</h3>
+                    <p class="text-neutral-500 mb-4">Save tweets you want to read later by clicking the bookmark icon</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Explore tweets
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        async function toggleBookmark(tweetId) {
+            try {
+                const response = await fetch(`/bookmark/${tweetId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (!data.is_bookmarked) {
+                        // Remove the bookmark card from the page
+                        const tweetCard = event.target.closest('.tweet-card');
+                        if (tweetCard) {
+                            tweetCard.style.transform = 'translateX(-100%)';
+                            tweetCard.style.opacity = '0';
+                            setTimeout(() => {
+                                tweetCard.remove();
+                                // Check if page is empty
+                                const remainingCards = document.querySelectorAll('.tweet-card');
+                                if (remainingCards.length === 0) {
+                                    location.reload();
+                                }
+                            }, 300);
+                        }
+                        if (window.showNotification) {
+                            window.showNotification('Bookmark removed!', 'success');
+                        }
+                    }
+                } else {
+                    throw new Error('Failed to toggle bookmark');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                if (window.showNotification) {
+                    window.showNotification('Error updating bookmark. Please try again.', 'error');
+                }
+            }
+        }
+    </script>
+{% endblock %}

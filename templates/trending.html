@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Trending - QuickTalk{% endblock %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto">
+        <!-- Page Header -->
+        <div class="card slide-up mb-8">
+            <div class="card-header">
+                <h1 class="card-title flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                    Trending Topics
+                </h1>
+                <p class="card-subtitle">Discover what's happening now</p>
+            </div>
+        </div>
+
+        <!-- Trending Hashtags -->
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {% for hashtag in trending_hashtags %}
+                <a href="{% url 'hashtag_tweets' hashtag.name %}" class="card hover-lift group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold">#</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-neutral-200 group-hover:text-blue-400 transition-colors">
+                                    #{{ hashtag.name }}
+                                </h3>
+                                <p class="text-sm text-neutral-500">{{ hashtag.get_tweet_count }} tweet{{ hashtag.get_tweet_count|pluralize }}</p>
+                            </div>
+                        </div>
+                        <svg class="w-5 h-5 text-neutral-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                    
+                    <!-- Trending indicator -->
+                    <div class="flex items-center space-x-2 text-sm">
+                        <div class="flex items-center space-x-1 text-green-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            <span>Trending</span>
+                        </div>
+                        <span class="text-neutral-500">•</span>
+                        <span class="text-neutral-500">{{ hashtag.created_at|timesince }} ago</span>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="col-span-full">
+                    <div class="card text-center py-12">
+                        <div class="w-24 h-24 bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-12 h-12 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-neutral-300 mb-2">No trending topics yet</h3>
+                        <p class="text-neutral-500 mb-4">Start using hashtags in your tweets to see trending topics</p>
+                        <a href="{% url 'home' %}" class="btn btn-primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Create a tweet
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- How hashtags work -->
+        <div class="card mt-8 slide-up">
+            <div class="card-header">
+                <h2 class="card-title">How Hashtags Work</h2>
+                <p class="card-subtitle">Learn about using hashtags effectively</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-blue-400 font-bold">#</span>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-neutral-200 mb-1">Create a hashtag</h3>
+                            <p class="text-sm text-neutral-400">Add a # before any word in your tweet to make it a hashtag</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-neutral-200 mb-1">Discover content</h3>
+                            <p class="text-sm text-neutral-400">Click on hashtags to find all tweets using that tag</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-neutral-200 mb-1">Trending topics</h3>
+                            <p class="text-sm text-neutral-400">Popular hashtags appear in trending to help others discover them</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-neutral-200 mb-1">Join conversations</h3>
+                            <p class="text-sm text-neutral-400">Use relevant hashtags to join ongoing conversations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
